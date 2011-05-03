@@ -4,6 +4,7 @@
  */
 package org.mypackage.hello;
 
+import java.math.BigDecimal;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ws.rs.PathParam;
@@ -48,6 +49,27 @@ public class GenericResource
 	{
 		nameStorage.setName(newName);
 		return "<html><body><h1>Hello " + nameStorage.getName() + "!</h1></body></html>";
+	}
+	
+	@GET
+	@Path("{task}/{factory}/{paramString}")
+	public String getValue(	@PathParam("task") String task,
+							@PathParam("factory") String factory,
+							@PathParam("paramString") String paramString)
+	{
+		return "This feature is not implemented yet. {" + task + ", " + factory + ", " + paramString + "}";
+	}
+	
+	@GET
+	@Produces("application/json")
+	public Calculation getJSON()
+	{
+		Calculation arr = new Calculation();
+		arr.task = "LinearTask";
+		arr.factory = "QFi";
+		arr.paramString = "abracadabra";
+		arr.value = new BigDecimal(12.41234);
+		return arr;
 	}
 
 	/**
