@@ -3,6 +3,7 @@ package org.mypackage.hello;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
+import com.mongodb.DBCursor;
 import com.mongodb.Mongo;
 import java.net.UnknownHostException;
 import java.util.Map;
@@ -15,8 +16,8 @@ public class PMP
 {
 	private DB connect() throws UnknownHostException
 	{
-		String user = "test1";
-		char[] pass = "123456".toCharArray();
+		String user = "crawler";
+		char[] pass = "J7vVBYCiGTjcnhN6Qe".toCharArray();
 		DB db = new Mongo("maximator.uar.net").getDB("npss");
 		boolean auth = db.authenticate(user, pass);
 		if (db.authenticate(user, pass))
@@ -28,16 +29,24 @@ public class PMP
 			throw new RuntimeException();
 		}
 	}
-	public Double getValue(String task, String factory, Map<String,Double> parameters) throws UnknownHostException
+	public Double getValue(String task, String factory, Map<String, Double> parameters) throws UnknownHostException
 	{
-		return (Double) connect().getCollection(task+"."+factory).find(new BasicDBObject("parameters", new BasicDBObject(parameters))).next().get("value");
-	}
-	public boolean setValue(String task, String factory, Map<String,Double> parameters, Double value) throws UnknownHostException
-	{
-		DBCollection collection = connect().getCollection(task+"."+factory);
-		if(collection.find(new BasicDBObject("parameters", new BasicDBObject(parameters))).length()==0)
+		DBCursor cursor = connect().getCollection(task + "." + factory).find(new BasicDBObject("parameters", new BasicDBObject(parameters)));
+		if (cursor.hasNext())
 		{
-			collection.update(new BasicDBObject("parameters", new BasicDBObject(parameters)), new BasicDBObject("$set",new BasicDBObject("value", value)), true, true);
+			return (Double) cursor.next().get("value");
+		}
+		else
+		{
+			return null;
+		}
+	}
+	public boolean setValue(String task, String factory, Map<String, Double> parameters, Double value) throws UnknownHostException
+	{
+		DBCollection collection = connect().getCollection(task + "." + factory);
+		if (collection.find(new BasicDBObject("parameters", new BasicDBObject(parameters))).length() == 0)
+		{
+			collection.update(new BasicDBObject("parameters", new BasicDBObject(parameters)), new BasicDBObject("$set", new BasicDBObject("value", value)), true, true);
 			return true;
 		}
 		else
@@ -45,5 +54,4 @@ public class PMP
 			return false;
 		}
 	}
-	
 }
