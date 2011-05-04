@@ -14,12 +14,21 @@ import java.util.Map;
  */
 public class PMP
 {
+	static public class CombiKey
+	{
+		public String task;
+		public String factory;
+		public Map<String, Double> parameters;
+		public CombiKey()
+		{
+		}
+	}
+
 	private DB connect() throws UnknownHostException
 	{
 		String user = "crawler";
 		char[] pass = "J7vVBYCiGTjcnhN6Qe".toCharArray();
 		DB db = new Mongo("maximator.uar.net").getDB("npss");
-		boolean auth = db.authenticate(user, pass);
 		if (db.authenticate(user, pass))
 		{
 			return db;
