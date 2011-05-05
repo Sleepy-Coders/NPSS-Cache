@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.mypackage.hello;
+package net.unikernel.npss.core;
 
 import javax.xml.bind.annotation.XmlRootElement;
 

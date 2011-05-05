@@ -3,7 +3,7 @@
  * and open the template in the editor.
  */
 
-package org.mypackage.hello;
+package net.unikernel.npss.core;
 
 import javax.ejb.Singleton;
 

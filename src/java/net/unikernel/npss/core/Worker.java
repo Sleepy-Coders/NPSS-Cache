@@ -3,8 +3,9 @@
  * and open the template in the editor.
  */
 
-package org.mypackage.hello;
+package net.unikernel.npss.core;
 
+import net.unikernel.npss.model.PMP;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;

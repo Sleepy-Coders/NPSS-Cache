@@ -1,4 +1,4 @@
-package org.mypackage.hello;
+package net.unikernel.npss.model;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
@@ -7,13 +7,26 @@ import com.mongodb.DBCursor;
 import com.mongodb.Mongo;
 import java.net.UnknownHostException;
 import java.util.Map;
+import javax.ejb.Singleton;
+import javax.ejb.Startup;
 
 /**
  * PMP = PMP Mongo Preprocessor
  * @author uko
  */
+@Singleton
+@Startup
 public class PMP
 {
+	private DB db;
+	/**
+	 * @return the db
+	 */
+	public DB getDb()
+	{
+		return db;
+	}
+	
 	static public class CombiKey
 	{
 		public String task;
@@ -24,23 +37,19 @@ public class PMP
 		}
 	}
 
-	private DB connect() throws UnknownHostException
+	public PMP() throws UnknownHostException, BadLoginException
 	{
 		String user = "crawler";
 		char[] pass = "J7vVBYCiGTjcnhN6Qe".toCharArray();
-		DB db = new Mongo("maximator.uar.net").getDB("npss");
-		if (db.authenticate(user, pass))
+		db = new Mongo("maximator.uar.net").getDB("npss");
+		if (!db.authenticate(user, pass))
 		{
-			return db;
-		}
-		else
-		{
-			throw new RuntimeException();
+			throw new BadLoginException();
 		}
 	}
 	public Double getValue(String task, String factory, Map<String, Double> parameters) throws UnknownHostException
 	{
-		DBCursor cursor = connect().getCollection(task + "." + factory).find(new BasicDBObject("parameters", new BasicDBObject(parameters)));
+		DBCursor cursor = db.getCollection(task + "." + factory).find(new BasicDBObject("parameters", new BasicDBObject(parameters)));
 		if (cursor.hasNext())
 		{
 			return (Double) cursor.next().get("value");
@@ -52,7 +61,7 @@ public class PMP
 	}
 	public boolean setValue(String task, String factory, Map<String, Double> parameters, Double value) throws UnknownHostException
 	{
-		DBCollection collection = connect().getCollection(task + "." + factory);
+		DBCollection collection = db.getCollection(task + "." + factory);
 		if (collection.find(new BasicDBObject("parameters", new BasicDBObject(parameters))).length() == 0)
 		{
 			collection.update(new BasicDBObject("parameters", new BasicDBObject(parameters)), new BasicDBObject("$set", new BasicDBObject("value", value)), true, true);
@@ -62,5 +71,10 @@ public class PMP
 		{
 			return false;
 		}
+	}
+	
+	public static class BadLoginException extends Exception
+	{
+		
 	}
 }
