@@ -1,8 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package net.unikernel.npss.core;
 
 import net.unikernel.npss.model.PMP;
@@ -16,6 +11,7 @@ import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import javax.ejb.EJB;
 
 /**
  *
@@ -24,6 +20,9 @@ import java.util.Set;
 public class Worker
 {
 	private String data;
+	@EJB
+	private PMP mongodbAnt;
+	
 	public Worker()
 	{
 		data="";
@@ -49,13 +48,14 @@ public class Worker
 			testMap.put("y", 124.4632);
 			testMap.put("z", 412.235);
 			
-			PMP mongodbAnt = new PMP();
 			String taskName = "firstTestTask";
 			String factoryName = "firstTestFactory";
 
 			data += "<br/>mongodbAnt: setting data...";
-			mongodbAnt.setValue(taskName, factoryName, testMap, 100.500);
-			data += "<br/>mongodbAnt: data was set";
+			if (mongodbAnt.setValue(taskName, factoryName, testMap, 100.500))
+				data += "<br/>mongodbAnt: data was set";
+			else
+				data += "<br/>mongodbAnt: data was NOT set, there is alredy some value under this key";
 			data += "<br/>mongodbAnt: getting data...";
 			Double value = mongodbAnt.getValue(taskName, factoryName, testMap);
 			data += "<br/>mongodbAnt: data was extracted from MongoDB";
@@ -99,10 +99,10 @@ public class Worker
 //        }
 //
 		}
-		catch (UnknownHostException ex)
-		{
-			System.out.print("UnknownHOST");
-		}
+//		catch (UnknownHostException ex)
+//		{
+//			System.out.print("UnknownHOST");
+//		}
 		catch (MongoException ex)
 		{
 			System.out.print("MongoError");
