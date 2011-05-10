@@ -12,11 +12,18 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import org.json.simple.JSONValue;
 
 /**
  *
  * @author uko
  */
+@Stateless
+@Path("/crushroom")
 public class Worker
 {
 	private String data;
@@ -28,8 +35,8 @@ public class Worker
 		data="";
 //		String user = "crawler";
 //		char[] pass = "J7vVBYCiGTjcnhN6Qe".toCharArray();
-		try
-		{
+//		try
+//		{
 //			Mongo m = new Mongo("localhost");
 //			DB db = m.getDB("npss");
 //			boolean auth = db.authenticate(user, pass);
@@ -41,31 +48,6 @@ public class Worker
 //			{
 //				data+="<br />bad";
 //			}
-//			m.close();
-			
-			Map<String, Double> testMap = new HashMap<String, Double>();
-			testMap.put("x", 123.124);
-			testMap.put("y", 124.4632);
-			testMap.put("z", 412.235);
-			
-			String taskName = "firstTestTask";
-			String factoryName = "firstTestFactory";
-
-			data += "<br/>mongodbAnt: setting data...";
-			if (mongodbAnt.setValue(taskName, factoryName, testMap, 100.500))
-				data += "<br/>mongodbAnt: data was set";
-			else
-				data += "<br/>mongodbAnt: data was NOT set, there is alredy some value under this key";
-			data += "<br/>mongodbAnt: getting data...";
-			Double value = mongodbAnt.getValue(taskName, factoryName, testMap);
-			data += "<br/>mongodbAnt: data was extracted from MongoDB";
-			data += "<br/>Task: " + taskName;
-			data += "<br/>Factory: " + factoryName;
-			data += "<br/>Parameters: x => " + testMap.get("x");
-			data += " y => " + testMap.get("y");
-			data += " z => " + testMap.get("z");
-			data += "<br/>Value: " + value;
-			
 //			DBCollection coll = db.getCollection("testCollection");
 //			Set<String> colls = db.getCollectionNames();
 //			for (String s : colls)
@@ -98,23 +80,81 @@ public class Worker
 //			data+="<br />"+one;
 //        }
 //
-		}
+//		}
 //		catch (UnknownHostException ex)
 //		{
 //			System.out.print("UnknownHOST");
 //		}
-		catch (MongoException ex)
+//		catch (MongoException ex)
+//		{
+//			System.out.print("MongoError");
+//		}
+//		catch(Exception e)
+//		{
+//			data += "<br/>Exception was handled: " + e.toString();
+//			if(mongodbAnt == null)
+//				data += "; mongodbAnt is null";
+//			StackTraceElement[] trace = e.getStackTrace();
+//			for (int i = trace.length - 1; i > -1; i--)
+//			{
+//				data += "<br/>" + trace[i].toString();
+//			}
+//		}
+	}
+	
+	@GET
+	@Produces("text/html")
+	public String testPMP()
+	{
+		String result = "";
+		try
 		{
-			System.out.print("MongoError");
+			Map<String, Double> testMap = new HashMap<String, Double>();
+			testMap.put("x", 123.124);
+			testMap.put("y", 124.4632);
+			testMap.put("z", 412.235);
+			String taskName = "firstTestTask";
+			String factoryName = "firstTestFactory";
+
+			result += "<br/>mongodbAnt: setting data...";
+			if (mongodbAnt.setValue(taskName, factoryName, testMap, 100.500))
+				result += "<br/>mongodbAnt: data was set";
+			else
+				result += "<br/>mongodbAnt: data was NOT set, there is alredy some value under this key";
+			result += "<br/>mongodbAnt: getting data...";
+			Double value = mongodbAnt.getValue(taskName, factoryName, testMap);
+			result += "<br/>mongodbAnt: data was extracted from MongoDB";
+			result += "<br/>Task: " + taskName;
+			result += "<br/>Factory: " + factoryName;
+			result += "<br/>Parameters: x => " + testMap.get("x");
+			result += " y => " + testMap.get("y");
+			result += " z => " + testMap.get("z");
+			result += "<br/>JSON: " + JSONValue.toJSONString(testMap);
+			result += "<br/>Value: " + value;
+		}
+		catch (MongoException e)
+		{
+			result += "<br/>Exception#" + e.getCode() + ": " + e.toString();
+			e.printStackTrace();
 		}
 		catch(Exception e)
 		{
-			data += "<br/>Exception was handled: " + e.getMessage();
+			result += "<br/>Exception was handled: " + e.toString();
+			if(mongodbAnt == null)
+				result += "; mongodbAnt is null";
+			StackTraceElement[] trace = e.getStackTrace();
+			for (int i = 0; i < trace.length; i++)
+			{
+				result += "<br/>" + trace[i].toString();
+			}
+			e.printStackTrace();
 		}
+		return result;
 	}
 	/**
 	 * @return the name
-	 */ public String getData()
+	 */
+	public String getData()
 	{
 		return data;
 	}

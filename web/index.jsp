@@ -14,7 +14,7 @@
         <title>JSP Page</title>
     </head>
     <body>
-		<jsp:useBean id="mybean" scope="session" class="net.unikernel.npss.core.Worker" />
-		<div><jsp:getProperty name="mybean" property="data" /></div>
+		<jsp:useBean id="Worker" scope="session" class="net.unikernel.npss.core.Worker" />
+		<div><jsp:getProperty name="Worker" property="data" /></div>
     </body>
 </html>
