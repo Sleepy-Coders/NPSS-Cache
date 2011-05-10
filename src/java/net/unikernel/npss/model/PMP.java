@@ -5,6 +5,7 @@ import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.Mongo;
+import com.mongodb.MongoException;
 import java.net.UnknownHostException;
 import java.util.Map;
 import javax.ejb.Singleton;
@@ -37,7 +38,7 @@ public class PMP
 		}
 	}
 
-	public PMP() throws UnknownHostException, BadLoginException
+	public PMP() throws MongoException, UnknownHostException, BadLoginException
 	{
 		String user = "crawler";
 		char[] pass = "J7vVBYCiGTjcnhN6Qe".toCharArray();
@@ -47,7 +48,7 @@ public class PMP
 			throw new BadLoginException();
 		}
 	}
-	public Double getValue(String task, String factory, Map<String, Double> parameters) throws UnknownHostException
+	public Double getValue(String task, String factory, Map<String, Double> parameters) throws MongoException
 	{
 		DBCursor cursor = db.getCollection(task + "." + factory).find(new BasicDBObject("parameters", new BasicDBObject(parameters)));
 		if (cursor.hasNext())
@@ -59,7 +60,16 @@ public class PMP
 			return null;
 		}
 	}
-	public boolean setValue(String task, String factory, Map<String, Double> parameters, Double value) throws UnknownHostException
+	/**
+	 * Adds value to the DB if there is no any value under this key and returns true, otherwise returns false.
+	 * @param task			Name of the task.
+	 * @param factory		Name of the factory.
+	 * @param parameters	Mapped parameters collection.
+	 * @param value			Value to insert into the DB.
+	 * @return True if there are no data under this key (task+factory+parameters) and value was inserted, otherwise - returns false.
+	 * @throws MongoException
+	 */
+	public boolean setValue(String task, String factory, Map<String, Double> parameters, Double value) throws MongoException
 	{
 		DBCollection collection = db.getCollection(task + "." + factory);
 		if (collection.find(new BasicDBObject("parameters", new BasicDBObject(parameters))).length() == 0)

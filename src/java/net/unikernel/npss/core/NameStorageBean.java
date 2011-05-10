@@ -1,15 +1,10 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package net.unikernel.npss.core;
 
 import javax.ejb.Singleton;
 
 /** Singleton session bean used to store the name parameter for "/helloWorld" resource
  *
- * @author mkuchtiak
+ * @author mcangel
  */
 @Singleton
 public class NameStorageBean {
