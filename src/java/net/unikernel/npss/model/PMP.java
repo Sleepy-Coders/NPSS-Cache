@@ -19,11 +19,11 @@ import javax.ejb.Startup;
 @Startup
 public class PMP
 {
-	private static DB db;
+	private DB db;
 	/**
 	 * @return the db
 	 */
-	static DB getDb()
+	DB getDb()
 	{
 		return db;
 	}
