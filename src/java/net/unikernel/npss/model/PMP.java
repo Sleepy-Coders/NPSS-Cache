@@ -6,6 +6,7 @@ import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.Mongo;
 import com.mongodb.MongoException;
+import java.math.BigDecimal;
 import java.net.UnknownHostException;
 import java.util.Map;
 import javax.ejb.Singleton;
@@ -48,12 +49,12 @@ public class PMP
 			throw new BadLoginException();
 		}
 	}
-	public Double getValue(String task, String factory, Map<String, Double> parameters) throws MongoException
+	public BigDecimal getValue(String task, String factory, Map<String, BigDecimal> parameters) throws MongoException
 	{
 		DBCursor cursor = db.getCollection(task + "." + factory).find(new BasicDBObject("parameters", new BasicDBObject(parameters)));
 		if (cursor.hasNext())
 		{
-			return (Double) cursor.next().get("value");
+			return (BigDecimal) cursor.next().get("value");
 		}
 		else
 		{
@@ -69,7 +70,7 @@ public class PMP
 	 * @return True if there are no data under this key (task+factory+parameters) and value was inserted, otherwise - returns false.
 	 * @throws MongoException
 	 */
-	public boolean setValue(String task, String factory, Map<String, Double> parameters, Double value) throws MongoException
+	public boolean setValue(String task, String factory, Map<String, BigDecimal> parameters, BigDecimal value) throws MongoException
 	{
 		DBCollection collection = db.getCollection(task + "." + factory);
 		if (collection.find(new BasicDBObject("parameters", new BasicDBObject(parameters))).length() == 0)
