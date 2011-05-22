@@ -78,7 +78,7 @@ public class GenericResource
 	{
 		String result = "";
 		result += "parsing JSON: " + paramJSONString;
-		result += "<br/>JSON parsed: " + (mongodbAnt.getValue(task, factory, (Map<String, BigDecimal>)JSONtoMap.parse(paramJSONString))).toString();
+		result += "<br/>JSON parsed: " + (mongodbAnt.getValue(task, factory, (Map<String, Double>)JSONtoMap.parse(paramJSONString))).toString();
 		return result;
 	}
 	
@@ -113,13 +113,13 @@ public class GenericResource
 		Map<String, ?> map = JSONtoMap.parse(content);
 		String taskName = map.get("Task").toString();
 		String faktoryName = map.get("Factory").toString();
-		Map<String, BigDecimal> sdMap = (Map<String, BigDecimal>)map.get("Parameters");
-		boolean setted = mongodbAnt.setValue(taskName, faktoryName, sdMap, (BigDecimal)map.remove("Value"));
-		BigDecimal val = mongodbAnt.getValue(taskName, faktoryName, sdMap);
-		if(setted)
+		Map<String, Double> sdMap = (Map<String, Double>)map.get("Parameters");
+		boolean set = mongodbAnt.setValue(taskName, faktoryName, sdMap, (Double)map.remove("Value"));
+		Double val = mongodbAnt.getValue(taskName, faktoryName, sdMap);
+		if(set)
 		{
 			return "Data was set: " + JSONValue.toJSONString(map) + " => (mongodbAnt has got) " + val;
 		}
-		return "Data was NOT set. Under key: " + JSONValue.toJSONString(map) + ", already sits this value: " + val;
+		return "Data was NOT set. Under the key: " + JSONValue.toJSONString(map) + ", already sits this value: " + val;
 	}
 }

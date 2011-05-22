@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
+import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
@@ -18,8 +19,8 @@ import org.bson.types.ObjectId;
  *
  * @author uko
  */
-@Singleton
-@Startup
+//@Singleton
+//@Startup
 public class Structure
 {
 	@EJB
@@ -75,12 +76,16 @@ public class Structure
 	}
 	public Structure()
 	{
+	}
+	
+	@PostConstruct
+	public void init()
+	{
 		DBObject jsonCollection = pmp.getDb().getCollection("structure").findOne();
 		id=(ObjectId) jsonCollection.removeField("_id");
 		for(Map.Entry<String,DBObject> i : (Set<Map.Entry<String,DBObject>>)jsonCollection.toMap().entrySet())
 		{
 			tasks.put(i.getKey(), (LinkedHashMap) i.getValue().toMap());
 		}
-		
 	}
 }

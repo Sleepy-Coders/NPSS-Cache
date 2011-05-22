@@ -7,7 +7,6 @@ import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.Mongo;
 import com.mongodb.MongoException;
-import java.math.BigDecimal;
 import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
@@ -110,20 +109,20 @@ public class Worker
 		String result = "";
 		try
 		{
-			Map<String, BigDecimal> testMap = new HashMap<String, BigDecimal>();
-			testMap.put("x", new BigDecimal(123.124));
-			testMap.put("y", new BigDecimal(124.4632));
-			testMap.put("z", new BigDecimal(412.235));
+			Map<String, Double> testMap = new HashMap<String, Double>();
+			testMap.put("x", new Double(123.124));
+			testMap.put("y", new Double(124.4632));
+			testMap.put("z", new Double(412.235));
 			String taskName = "firstTestTask";
 			String factoryName = "firstTestFactory";
 
 			result += "<br/>mongodbAnt: setting data...";
-			if (mongodbAnt.setValue(taskName, factoryName, testMap, new BigDecimal(100.500)))
+			if (mongodbAnt.setValue(taskName, factoryName, testMap, new Double(100.500)))
 				result += "<br/>mongodbAnt: data was set";
 			else
 				result += "<br/>mongodbAnt: data was NOT set, there is alredy some value under this key";
 			result += "<br/>mongodbAnt: getting data...";
-			BigDecimal value = mongodbAnt.getValue(taskName, factoryName, testMap);
+			Double value = mongodbAnt.getValue(taskName, factoryName, testMap);
 			result += "<br/>mongodbAnt: data was extracted from MongoDB";
 			result += "<br/>Task: " + taskName;
 			result += "<br/>Factory: " + factoryName;
