@@ -117,12 +117,12 @@ public class Worker
 			String factoryName = "firstTestFactory";
 
 			result += "<br/>mongodbAnt: setting data...";
-			if (mongodbAnt.setValue(taskName, factoryName, testMap, new Double(100.500)))
+			if (mongodbAnt.create(taskName, factoryName, testMap, new Double(100.500)))
 				result += "<br/>mongodbAnt: data was set";
 			else
 				result += "<br/>mongodbAnt: data was NOT set, there is alredy some value under this key";
 			result += "<br/>mongodbAnt: getting data...";
-			Double value = mongodbAnt.getValue(taskName, factoryName, testMap);
+			Double value = mongodbAnt.read(taskName, factoryName, testMap);
 			result += "<br/>mongodbAnt: data was extracted from MongoDB";
 			result += "<br/>Task: " + taskName;
 			result += "<br/>Factory: " + factoryName;

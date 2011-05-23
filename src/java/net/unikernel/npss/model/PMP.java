@@ -7,7 +7,11 @@ import com.mongodb.DBCursor;
 import com.mongodb.Mongo;
 import com.mongodb.MongoException;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
+import java.util.TreeSet;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.ejb.Singleton;
@@ -21,6 +25,34 @@ import javax.ejb.Startup;
 @Startup
 public class PMP
 {
+	public enum SizeType
+	{
+		DATA_SIZE ("size"),
+		STORAGE_SIZE ("storageSize"),
+		INDEX_SIZE ("totalIndexSize");
+		private final String value;
+		private SizeType(String value)
+		{
+			this.value = value;
+		}
+		public String value(){return value;}
+	};
+	
+	public enum SizeUnit
+	{
+		BIT (1/8),
+		BYTE (1),
+		KILOBYTE (1024),
+		MEGABYTE (1024*1024),
+		GIGABYTE (1024*1024*1024);
+		private final double value;
+		private SizeUnit(double value)
+		{
+			this.value = value;
+		}
+		public double value(){return value;}
+	};
+	
 	private DB db;
 	/**
 	 * @return the db
@@ -37,6 +69,12 @@ public class PMP
 		public Map<String, Double> parameters;
 		public CombiKey()
 		{
+		}
+		public CombiKey(String task, String factory, Map<String, Double> parameters)
+		{
+			this.task = task;
+			this.factory = factory;
+			this.parameters = parameters;
 		}
 	}
 
@@ -71,9 +109,21 @@ public class PMP
 	 * @return
 	 * @throws MongoException 
 	 */
-	public Double getValue(String task, String factory, Map<String, Double> parameters) throws MongoException
+	public Double read(String task, String factory, Map<String, Double> parameters) throws MongoException
 	{
-		DBCursor cursor = db.getCollection(task + "." + factory).find(new BasicDBObject("parameters", new BasicDBObject(parameters)));
+		DBCursor cursor = db.getCollection("st."+task + "." + factory).find(new BasicDBObject("parameters", new BasicDBObject(parameters)));
+		if (cursor.hasNext())
+		{
+			return (Double) cursor.next().get("value");
+		}
+		else
+		{
+			return null;
+		}
+	}
+	public Double read(CombiKey key) throws MongoException
+	{
+		DBCursor cursor = db.getCollection("st."+key.task + "." + key.factory).find(new BasicDBObject("parameters", new BasicDBObject(key.parameters)));
 		if (cursor.hasNext())
 		{
 			return (Double) cursor.next().get("value");
@@ -92,9 +142,9 @@ public class PMP
 	 * @return True if there are no data under this key (task+factory+parameters) and value was inserted, otherwise - returns false.
 	 * @throws MongoException
 	 */
-	public boolean setValue(String task, String factory, Map<String, Double> parameters, Double value) throws MongoException
+	public boolean create(String task, String factory, Map<String, Double> parameters, Double value) throws MongoException
 	{ 
-		DBCollection collection = db.getCollection(task + "." + factory);
+		DBCollection collection = db.getCollection("st."+task + "." + factory);
 		if (collection.find(new BasicDBObject("parameters", new BasicDBObject(parameters))).length() == 0)
 		{
 			collection.update(new BasicDBObject("parameters", new BasicDBObject(parameters)), new BasicDBObject("$set", new BasicDBObject("value", value)), true, true);
@@ -104,6 +154,58 @@ public class PMP
 		{
 			return false;
 		}
+	}
+	
+	public boolean create(CombiKey key, Double value) throws MongoException
+	{ 
+		DBCollection collection = db.getCollection("st."+key.task + "." + key.factory);
+		if (collection.find(new BasicDBObject("parameters", new BasicDBObject(key.parameters))).length() == 0)
+		{
+			collection.update(new BasicDBObject("parameters", new BasicDBObject(key.parameters)), new BasicDBObject("$set", new BasicDBObject("value", value)), true, true);
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	
+	TreeMap<String,TreeSet<String>> getStructure()
+	{
+		TreeMap<String,TreeSet<String>> result = new TreeMap<String,TreeSet<String>>();
+		for(String i :db.getCollectionNames())
+		{
+			String[] set = i.split(".");
+			if(set[0].equals("st"))
+			{
+				if(!result.containsKey(set[1]))
+				{
+					result.put(set[1], new TreeSet<String>());
+				}
+				((TreeSet<String>)result.get(set[1])).add(set[2]);
+			}
+		}
+		return result;
+	}
+	
+	public Double getSize(String task, String factory, String sizeType)
+	{
+		return getSize(task, factory, SizeType.DATA_SIZE, SizeUnit.BYTE);
+	}
+	
+	public Double getSize(String task, String factory, SizeType sizeType)
+	{
+		return getSize(task, factory, sizeType, SizeUnit.BYTE);
+	}
+	
+	public Double getSize(String task, String factory, SizeUnit sizeUnit)
+	{
+		return getSize(task, factory, SizeType.DATA_SIZE, sizeUnit);
+	}
+	
+	public Double getSize(String task, String factory, SizeType sizeType, SizeUnit sizeUnit)
+	{
+		return (Double)db.getCollection("st."+task + "." + factory).getStats().get(sizeType.value())/sizeUnit.value;
 	}
 	
 	public static class BadLoginException extends Exception

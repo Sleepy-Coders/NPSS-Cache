@@ -78,7 +78,7 @@ public class GenericResource
 	{
 		String result = "";
 		result += "parsing JSON: " + paramJSONString;
-		result += "<br/>JSON parsed: " + (mongodbAnt.getValue(task, factory, (Map<String, Double>)JSONtoMap.parse(paramJSONString))).toString();
+		result += "<br/>JSON parsed: " + (mongodbAnt.read(task, factory, (Map<String, Double>)JSONtoMap.parse(paramJSONString))).toString();
 		return result;
 	}
 	
@@ -114,8 +114,8 @@ public class GenericResource
 		String taskName = map.get("Task").toString();
 		String faktoryName = map.get("Factory").toString();
 		Map<String, Double> sdMap = (Map<String, Double>)map.get("Parameters");
-		boolean set = mongodbAnt.setValue(taskName, faktoryName, sdMap, (Double)map.remove("Value"));
-		Double val = mongodbAnt.getValue(taskName, faktoryName, sdMap);
+		boolean set = mongodbAnt.create(taskName, faktoryName, sdMap, (Double)map.remove("Value"));
+		Double val = mongodbAnt.read(taskName, faktoryName, sdMap);
 		if(set)
 		{
 			return "Data was set: " + JSONValue.toJSONString(map) + " => (mongodbAnt has got) " + val;
