@@ -143,31 +143,35 @@ public class PMP
 	 * @throws MongoException
 	 */
 	public boolean create(String task, String factory, Map<String, Double> parameters, Double value) throws MongoException
-	{ 
-		DBCollection collection = db.getCollection("st."+task + "." + factory);
-		if (collection.find(new BasicDBObject("parameters", new BasicDBObject(parameters))).length() == 0)
+	{
+		if(!db.getCollectionNames().contains("st."+task + "." + factory))
 		{
-			collection.update(new BasicDBObject("parameters", new BasicDBObject(parameters)), new BasicDBObject("$set", new BasicDBObject("value", value)), true, true);
-			return true;
+			BasicDBObject index = new BasicDBObject();
+			index.put("parameters", 1);
+			index.put("unique", true);
+			db.getCollection("st."+task + "." + factory).ensureIndex(index);
 		}
-		else
-		{
-			return false;
-		}
+		BasicDBObject insert = new BasicDBObject();
+		insert.put("parameters", parameters);
+		insert.put("value", value);
+		db.getCollection("st."+task + "." + factory).insert(insert);
+		return true;
 	}
 	
 	public boolean create(CombiKey key, Double value) throws MongoException
 	{ 
-		DBCollection collection = db.getCollection("st."+key.task + "." + key.factory);
-		if (collection.find(new BasicDBObject("parameters", new BasicDBObject(key.parameters))).length() == 0)
+		if(!db.getCollectionNames().contains("st."+key.task + "." + key.factory))
 		{
-			collection.update(new BasicDBObject("parameters", new BasicDBObject(key.parameters)), new BasicDBObject("$set", new BasicDBObject("value", value)), true, true);
-			return true;
+			BasicDBObject index = new BasicDBObject();
+			index.put("parameters", 1);
+			index.put("unique", true);
+			db.getCollection("st."+key.task + "." + key.factory).ensureIndex(index);
 		}
-		else
-		{
-			return false;
-		}
+		BasicDBObject insert = new BasicDBObject();
+		insert.put("parameters", key.parameters);
+		insert.put("value", value);
+		db.getCollection("st."+key.task + "." + key.factory).insert(insert);
+		return true;
 	}
 	
 	TreeMap<String,TreeSet<String>> getStructure()
