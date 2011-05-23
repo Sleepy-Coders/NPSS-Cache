@@ -138,7 +138,7 @@ public class PMP
 	 * @param task			Name of the task.
 	 * @param factory		Name of the factory.
 	 * @param parameters	Mapped parameters collection.
-	 * @param value			Value to insert into the DB.
+	 * @param value			Value to delete into the DB.
 	 * @return True if there are no data under this key (task+factory+parameters) and value was inserted, otherwise - returns false.
 	 * @throws MongoException
 	 */
@@ -170,8 +170,30 @@ public class PMP
 		BasicDBObject insert = new BasicDBObject();
 		insert.put("parameters", key.parameters);
 		insert.put("value", value);
-		db.getCollection("st."+key.task + "." + key.factory).insert(insert);
-		return true;
+		if(db.getCollection("st."+key.task + "." + key.factory).insert(insert).getLastError().get("err")==null)
+			return true;
+		else
+			return false;
+	}
+	
+	public void delete(String task, String factory, Map<String, Double> parameters) throws MongoException
+	{
+		db.getCollection("st."+task + "." + factory).remove(new BasicDBObject("parameters", new BasicDBObject(parameters)));
+	}
+	
+	public void delete(CombiKey key) throws MongoException
+	{
+		db.getCollection("st."+key.task + "." + key.factory).remove(new BasicDBObject("parameters", new BasicDBObject(key.parameters)));
+	}
+	
+	public void update(String task, String factory, Map<String, Double> parameters, Double value)
+	{
+		db.getCollection("st."+task + "." + factory).update(new BasicDBObject("parameters", new BasicDBObject(parameters)), new BasicDBObject("$set", new BasicDBObject("value", value)), false, false);
+	}
+	
+	public void update(CombiKey key, Double value)
+	{
+		db.getCollection("st."+key.task + "." + key.factory).update(new BasicDBObject("parameters", new BasicDBObject(key.parameters)), new BasicDBObject("$set", new BasicDBObject("value", value)), false, false);
 	}
 	
 	TreeMap<String,TreeSet<String>> getStructure()
