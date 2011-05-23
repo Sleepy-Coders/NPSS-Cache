@@ -276,15 +276,7 @@ public class PMP
 	 */
 	public Double read(String task, String factory, Map<String, Double> parameters) throws MongoException
 	{
-		DBCursor cursor = db.getCollection("st."+task + "." + factory).find(new BasicDBObject("parameters", new BasicDBObject(parameters)));
-		if (cursor.hasNext())
-		{
-			return (Double) cursor.next().get("value");
-		}
-		else
-		{
-			return null;
-		}
+		return (Double) db.getCollection("st."+task + "." + factory).findOne(new BasicDBObject("parameters", new BasicDBObject(parameters))).get("value");
 	}
 	/**
 	 * Returns a value that matches the "key"
@@ -294,15 +286,7 @@ public class PMP
 	 */
 	public Double read(CombiKey key) throws MongoException
 	{
-		DBCursor cursor = db.getCollection("st."+key.getTask() + "." + key.getFactory()).find(new BasicDBObject("parameters", new BasicDBObject(key.getParameters())));
-		if (cursor.hasNext())
-		{
-			return (Double) cursor.next().get("value");
-		}
-		else
-		{
-			return null;
-		}
+		return (Double) db.getCollection("st."+key.getTask() + "." + key.getFactory()).findOne(new BasicDBObject("parameters", new BasicDBObject(key.getParameters()))).get("value");
 	}
 	/**
 	 * Updates a value that matches the "key"
