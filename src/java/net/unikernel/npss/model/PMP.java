@@ -2,7 +2,6 @@ package net.unikernel.npss.model;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
-import com.mongodb.DBCursor;
 import com.mongodb.Mongo;
 import com.mongodb.MongoException;
 import java.net.UnknownHostException;
@@ -226,7 +225,7 @@ public class PMP
 	 * @return returns true if the document is successfully created and false if not (in most of situations document already exists)
 	 * @throws MongoException exception regarding some mongodb stuff
 	 */
-	public boolean create(String task, String factory, Map<String, Double> parameters, Double value) throws MongoException
+	public boolean create(String task, String factory, Map<String, Double> parameters, String value) throws MongoException
 	{
 		if(!db.getCollectionNames().contains("st."+task + "." + factory))
 		{
@@ -249,7 +248,7 @@ public class PMP
 	 * @return returns true if the document is successfully created and false if not (in most of situations document already exists)
 	 * @throws MongoException exception regarding some mongodb stuff
 	 */
-	public boolean create(CombiKey key, Double value) throws MongoException
+	public boolean create(CombiKey key, String value) throws MongoException
 	{ 
 		if(!db.getCollectionNames().contains("st."+key.task + "." + key.factory))
 		{
@@ -274,9 +273,9 @@ public class PMP
 	 * @return the result of calculation
 	 * @throws MongoException exception regarding some mongodb stuff
 	 */
-	public Double read(String task, String factory, Map<String, Double> parameters) throws MongoException
+	public String read(String task, String factory, Map<String, Double> parameters) throws MongoException
 	{
-		return (Double) db.getCollection("st."+task + "." + factory).findOne(new BasicDBObject("parameters", new BasicDBObject(parameters))).get("value");
+		return (String) db.getCollection("st."+task + "." + factory).findOne(new BasicDBObject("parameters", new BasicDBObject(parameters))).get("value");
 	}
 	/**
 	 * Returns a value that matches the "key"
@@ -284,9 +283,9 @@ public class PMP
 	 * @return the result of calculation
 	 * @throws MongoException exception regarding some mongodb stuff
 	 */
-	public Double read(CombiKey key) throws MongoException
+	public String read(CombiKey key) throws MongoException
 	{
-		return (Double) db.getCollection("st."+key.getTask() + "." + key.getFactory()).findOne(new BasicDBObject("parameters", new BasicDBObject(key.getParameters()))).get("value");
+		return (String) db.getCollection("st."+key.getTask() + "." + key.getFactory()).findOne(new BasicDBObject("parameters", new BasicDBObject(key.getParameters()))).get("value");
 	}
 	/**
 	 * Updates a value that matches the "key"
@@ -295,7 +294,7 @@ public class PMP
 	 * @param parameters map of parameters
 	 * @param value main value to update (the result of calculation)
 	 */
-	public void update(String task, String factory, Map<String, Double> parameters, Double value)
+	public void update(String task, String factory, Map<String, Double> parameters, String value)
 	{
 		db.getCollection("st."+task + "." + factory).update(new BasicDBObject("parameters", new BasicDBObject(parameters)), new BasicDBObject("$set", new BasicDBObject("value", value)), false, false);
 	}
@@ -305,7 +304,7 @@ public class PMP
 	 * @param key a "key" to update the mapped value
 	 * @param value main value to update (the result of calculation)
 	 */
-	public void update(CombiKey key, Double value)
+	public void update(CombiKey key, String value)
 	{
 		db.getCollection("st."+key.getTask() + "." + key.getFactory()).update(new BasicDBObject("parameters", new BasicDBObject(key.getParameters())), new BasicDBObject("$set", new BasicDBObject("value", value)), false, false);
 	}

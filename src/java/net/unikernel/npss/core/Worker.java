@@ -1,16 +1,9 @@
 package net.unikernel.npss.core;
 
 import net.unikernel.npss.model.PMP;
-import com.mongodb.DB;
-import com.mongodb.DBCollection;
-import com.mongodb.DBCursor;
-import com.mongodb.DBObject;
-import com.mongodb.Mongo;
 import com.mongodb.MongoException;
-import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ws.rs.GET;
@@ -117,12 +110,12 @@ public class Worker
 			String factoryName = "firstTestFactory";
 
 			result += "<br/>mongodbAnt: setting data...";
-			if (mongodbAnt.create(taskName, factoryName, testMap, new Double(100.500)))
+			if (mongodbAnt.create(taskName, factoryName, testMap, "aaaaa"))
 				result += "<br/>mongodbAnt: data was set";
 			else
 				result += "<br/>mongodbAnt: data was NOT set, there is alredy some value under this key";
 			result += "<br/>mongodbAnt: getting data...";
-			Double value = mongodbAnt.read(taskName, factoryName, testMap);
+			String value = mongodbAnt.read(taskName, factoryName, testMap);
 			result += "<br/>mongodbAnt: data was extracted from MongoDB";
 			result += "<br/>Task: " + taskName;
 			result += "<br/>Factory: " + factoryName;
