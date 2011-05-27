@@ -233,7 +233,7 @@ public class PMP
 			BasicDBObject index = new BasicDBObject();
 			index.put("parameters", 1);
 			index.put("unique", true);
-			index.put("name", "parameters");
+			index.put("name", "i");
 			db.getCollection("st."+task + "." + factory).ensureIndex(index);
 		}
 		BasicDBObject insert = new BasicDBObject();
@@ -257,7 +257,7 @@ public class PMP
 			BasicDBObject index = new BasicDBObject();
 			index.put("parameters", 1);
 			index.put("unique", true);
-			index.put("name", "parameters");
+			index.put("name", "i");
 			db.getCollection("st."+key.getTask() + "." + key.getFactory()).ensureIndex(index);
 		}
 		BasicDBObject insert = new BasicDBObject();
@@ -340,7 +340,7 @@ public class PMP
 	{
 		db.getCollection("st."+key.getTask() + "." + key.getFactory()).remove(new BasicDBObject("parameters", new BasicDBObject(key.getParameters())));
 	}
-	TreeMap<String,TreeSet<String>> getStructure()
+	public TreeMap<String,TreeSet<String>> getStructure()
 	{
 		TreeMap<String,TreeSet<String>> result = new TreeMap<String,TreeSet<String>>();
 		for(String i :db.getCollectionNames())
