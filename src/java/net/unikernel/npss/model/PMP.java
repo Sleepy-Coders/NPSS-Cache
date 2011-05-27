@@ -233,6 +233,7 @@ public class PMP
 			BasicDBObject index = new BasicDBObject();
 			index.put("parameters", 1);
 			index.put("unique", true);
+			index.put("name", "parameters");
 			db.getCollection("st."+task + "." + factory).ensureIndex(index);
 		}
 		BasicDBObject insert = new BasicDBObject();
@@ -256,6 +257,7 @@ public class PMP
 			BasicDBObject index = new BasicDBObject();
 			index.put("parameters", 1);
 			index.put("unique", true);
+			index.put("name", "parameters");
 			db.getCollection("st."+key.getTask() + "." + key.getFactory()).ensureIndex(index);
 		}
 		BasicDBObject insert = new BasicDBObject();
