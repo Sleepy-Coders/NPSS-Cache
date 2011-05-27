@@ -47,7 +47,8 @@ public class GenericResource
 	{
 		Map<String, Double> parameters = (Map<String, Double>) JSONtoMap.parse(paramJSONString);
 		parameters.put("AlteredSeriesIndex", Double.valueOf(alteredSeriesIndex));
-		return mongodbAnt.read(task, factory, parameters);
+		String result = mongodbAnt.read(task, factory, parameters);
+		return result;
 	}
 	
 	/**
@@ -66,17 +67,26 @@ public class GenericResource
 	@Produces("text/plain")
 	public String putValue(String content)
 	{
+		try
+		{
 		Map<String, ?> map = JSONtoMap.parse(content);
 		String taskName = map.get("TaskFullName").toString();
 		String factoryName = map.get("FactoryFullName").toString();
 		Map<String, Double> sdMap = (Map<String, Double>)map.get("Argument");
 		sdMap.put("AlteredSeriesIndex", Double.valueOf(String.valueOf(map.get("AlteredSeriesIndex"))));
-		boolean set = mongodbAnt.create(taskName, factoryName, sdMap, String.valueOf(map.remove("Value")));
+		boolean set = mongodbAnt.create(taskName, factoryName, sdMap, JSONValue.toJSONString(map.get("Value")));
 		String val = mongodbAnt.read(taskName, factoryName, sdMap);
 		if(set)
 		{
 			return "Data was set: " + JSONValue.toJSONString(map) + " => (mongodbAnt has got) " + val;
 		}
 		return "Data was NOT set. Under the key: " + JSONValue.toJSONString(map) + ", already sits this value: " + val;
+		}
+		catch(Exception ex)
+		{
+			System.err.println(ex.getMessage());
+			ex.printStackTrace();
+			return "Error: " + ex.getMessage();
+		}
 	}
 }
