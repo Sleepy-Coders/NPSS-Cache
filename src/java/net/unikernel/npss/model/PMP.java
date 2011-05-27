@@ -406,6 +406,17 @@ public class PMP
 		return (Double)db.getCollection("st."+task + "." + factory).getStats().get(sizeType.value)/sizeUnit.value;
 	}
 	
+	public void dropAll()
+	{
+		for (String i : db.getCollectionNames())
+		{
+			if(i.substring(0, 3).equals("st."))
+			{
+				db.getCollection(i).drop();
+			}
+		}
+	}
+	
 	/**
 	 * Checked exception that is thrown when there's a problem with login/pass
 	 */
