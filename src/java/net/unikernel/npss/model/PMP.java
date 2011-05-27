@@ -2,6 +2,7 @@ package net.unikernel.npss.model;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
+import com.mongodb.DBObject;
 import com.mongodb.Mongo;
 import com.mongodb.MongoException;
 import java.net.UnknownHostException;
@@ -275,7 +276,11 @@ public class PMP
 	 */
 	public String read(String task, String factory, Map<String, Double> parameters) throws MongoException
 	{
-		return (String) db.getCollection("st."+task + "." + factory).findOne(new BasicDBObject("parameters", new BasicDBObject(parameters))).get("value");
+		DBObject val = db.getCollection("st."+task + "." + factory).findOne(new BasicDBObject("parameters", new BasicDBObject(parameters)));
+		if(val == null)
+			return null;
+		else
+			return (String) val.get("value");
 	}
 	/**
 	 * Returns a value that matches the "key"
@@ -285,7 +290,11 @@ public class PMP
 	 */
 	public String read(CombiKey key) throws MongoException
 	{
-		return (String) db.getCollection("st."+key.getTask() + "." + key.getFactory()).findOne(new BasicDBObject("parameters", new BasicDBObject(key.getParameters()))).get("value");
+		DBObject val = db.getCollection("st."+key.getTask() + "." + key.getFactory()).findOne(new BasicDBObject("parameters", new BasicDBObject(key.getParameters())));
+		if(val == null)
+			return null;
+		else
+			return (String) val.get("value");
 	}
 	/**
 	 * Updates a value that matches the "key"
