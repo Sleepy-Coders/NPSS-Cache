@@ -109,7 +109,7 @@ public class PMP
 		/**
 		 * Map of parameters
 		 */
-		private TreeMap<String, Double> parameters;
+		private TreeMap<String, String> parameters;
 		/**
 		 * Creates an instance with an empty fields
 		 */
@@ -117,7 +117,7 @@ public class PMP
 		{
 			task="";
 			factory="";
-			parameters=new TreeMap<String, Double>();
+			parameters=new TreeMap<String, String>();
 		}
 		/**
 		 * Creates a new instance and assigns them passed data
@@ -125,7 +125,7 @@ public class PMP
 		 * @param factory value of factory 
 		 * @param parameters map of parameters
 		 */
-		public CombiKey(String task, String factory, TreeMap<String, Double> parameters)
+		public CombiKey(String task, String factory, TreeMap<String, String> parameters)
 		{
 			this.task = task;
 			this.factory = factory;
@@ -162,14 +162,14 @@ public class PMP
 		/**
 		 * @return the parameters
 		 */
-		public TreeMap<String, Double> getParameters()
+		public TreeMap<String, String> getParameters()
 		{
 			return parameters;
 		}
 		/**
 		 * @param parameters the parameters to set
 		 */
-		public void setParameters(TreeMap<String, Double> parameters)
+		public void setParameters(TreeMap<String, String> parameters)
 		{
 			this.parameters = parameters;
 		}
@@ -178,7 +178,7 @@ public class PMP
 		 * @param name parameters name (key that maps the value of a parameter)
 		 * @param value a value of the parameter
 		 */
-		public void addParameter(String name,Double value)
+		public void addParameter(String name,String value)
 		{
 			parameters.put(name, value);
 		}
@@ -226,7 +226,7 @@ public class PMP
 	 * @return returns true if the document is successfully created and false if not (in most of situations document already exists)
 	 * @throws MongoException exception regarding some mongodb stuff
 	 */
-	public boolean create(String task, String factory, Map<String, Double> parameters, String value) throws MongoException
+	public boolean create(String task, String factory, Map<String, String> parameters, String value) throws MongoException
 	{
 		if(!db.getCollectionNames().contains("st."+task + "." + factory))
 		{
@@ -276,7 +276,7 @@ public class PMP
 	 * @return the result of calculation
 	 * @throws MongoException exception regarding some mongodb stuff
 	 */
-	public String read(String task, String factory, Map<String, Double> parameters) throws MongoException
+	public String read(String task, String factory, Map<String, String> parameters) throws MongoException
 	{
 		DBObject val = db.getCollection("st."+task + "." + factory).findOne(new BasicDBObject("parameters", new BasicDBObject(parameters)));
 		if(val == null)
@@ -305,7 +305,7 @@ public class PMP
 	 * @param parameters map of parameters
 	 * @param value main value to update (the result of calculation)
 	 */
-	public void update(String task, String factory, Map<String, Double> parameters, String value)
+	public void update(String task, String factory, Map<String, String> parameters, String value)
 	{
 		db.getCollection("st."+task + "." + factory).update(new BasicDBObject("parameters", new BasicDBObject(parameters)), new BasicDBObject("$set", new BasicDBObject("value", value)), false, false);
 	}
@@ -326,7 +326,7 @@ public class PMP
 	 * @param parameters map of parameters
 	 * @throws MongoException exception regarding some mongodb stuff
 	 */
-	public void delete(String task, String factory, Map<String, Double> parameters) throws MongoException
+	public void delete(String task, String factory, Map<String, String> parameters) throws MongoException
 	{
 		db.getCollection("st."+task + "." + factory).remove(new BasicDBObject("parameters", new BasicDBObject(parameters)));
 	}
