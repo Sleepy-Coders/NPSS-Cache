@@ -45,8 +45,8 @@ public class GenericResource
 							@PathParam("AlteredSeriesIndex") String alteredSeriesIndex,
 							@PathParam("Argument") String paramJSONString)
 	{
-		Map<String, Double> parameters = (Map<String, Double>) JSONtoMap.parse(paramJSONString);
-		parameters.put("AlteredSeriesIndex", Double.valueOf(alteredSeriesIndex));
+		Map<String, String> parameters = (Map<String, String>) JSONtoMap.parse(paramJSONString);
+		parameters.put("AlteredSeriesIndex", alteredSeriesIndex);
 		String result = mongodbAnt.read(task, factory, parameters);
 		return result;
 	}
@@ -72,8 +72,8 @@ public class GenericResource
 		Map<String, ?> map = JSONtoMap.parse(content);
 		String taskName = map.get("TaskFullName").toString();
 		String factoryName = map.get("FactoryFullName").toString();
-		Map<String, Double> sdMap = (Map<String, Double>)map.get("Argument");
-		sdMap.put("AlteredSeriesIndex", Double.valueOf(String.valueOf(map.get("AlteredSeriesIndex"))));
+		Map<String, String> sdMap = (Map<String, String>)map.get("Argument");
+		sdMap.put("AlteredSeriesIndex", String.valueOf(map.get("AlteredSeriesIndex")));
 		boolean set = mongodbAnt.create(taskName, factoryName, sdMap, JSONValue.toJSONString(map.get("Value")));
 		String val = mongodbAnt.read(taskName, factoryName, sdMap);
 		if(set)

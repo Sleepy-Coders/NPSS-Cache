@@ -102,10 +102,10 @@ public class Worker
 		String result = "";
 		try
 		{
-			Map<String, Double> testMap = new HashMap<String, Double>();
-			testMap.put("x", new Double(123.124));
-			testMap.put("y", new Double(124.4632));
-			testMap.put("z", new Double(412.235));
+			Map<String, String> testMap = new HashMap<String, String>();
+			testMap.put("x", "bbb");
+			testMap.put("y", "ccc");
+			testMap.put("z", "ddd");
 			String taskName = "firstTestTask";
 			String factoryName = "firstTestFactory";
 
