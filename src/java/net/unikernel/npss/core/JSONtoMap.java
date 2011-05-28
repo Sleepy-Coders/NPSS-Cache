@@ -28,17 +28,8 @@ public class JSONtoMap
 		}
 	};
 
-	public static Map<String, ? extends Object> parse(String JSONString)
+	public static Map<String, ? extends Object> parse(String JSONString) throws org.json.simple.parser.ParseException
 	{
-		try
-		{
-			Map<String, ? extends Object> map = (Map)(new JSONParser()).parse(JSONString, containerFactory);
-			return map;
-		}
-		catch (org.json.simple.parser.ParseException e)
-		{
-			e.printStackTrace();
-			return null;
-		}
+		return (Map)(new JSONParser()).parse(JSONString, containerFactory);
 	}
 }
