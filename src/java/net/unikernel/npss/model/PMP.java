@@ -345,7 +345,7 @@ public class PMP
 		TreeMap<String,TreeSet<String>> result = new TreeMap<String,TreeSet<String>>();
 		for(String i :db.getCollectionNames())
 		{
-			String[] set = i.split(".");
+			String[] set = i.split("\\.");
 			if(set[0].equals("st"))
 			{
 				if(!result.containsKey(set[1]))
@@ -355,6 +355,7 @@ public class PMP
 				((TreeSet<String>)result.get(set[1])).add(set[2]);
 			}
 		}
+                
 		return result;
 	}
 	
@@ -403,7 +404,8 @@ public class PMP
 	 */
 	public Double getSize(String task, String factory, SizeType sizeType, SizeUnit sizeUnit)
 	{
-		return (Double)db.getCollection("st."+task + "." + factory).getStats().get(sizeType.value)/sizeUnit.value;
+            Integer size = (Integer)db.getCollection("st."+task + "." + factory).getStats().get(sizeType.value);
+            return new Double(size)/sizeUnit.value;
 	}
 	
 	public void dropAll()
