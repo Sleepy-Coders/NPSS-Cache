@@ -6,6 +6,7 @@ import com.mongodb.DBObject;
 import com.mongodb.Mongo;
 import com.mongodb.MongoException;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -340,6 +341,7 @@ public class PMP
 	{
 		db.getCollection("st."+key.getTask() + "." + key.getFactory()).remove(new BasicDBObject("parameters", new BasicDBObject(key.getParameters())));
 	}
+	
 	public TreeMap<String,TreeSet<String>> getStructure()
 	{
 		TreeMap<String,TreeSet<String>> result = new TreeMap<String,TreeSet<String>>();
@@ -404,6 +406,19 @@ public class PMP
 	public Double getSize(String task, String factory, SizeType sizeType, SizeUnit sizeUnit)
 	{
 		return (Double)db.getCollection("st."+task + "." + factory).getStats().get(sizeType.value)/sizeUnit.value;
+	}
+	
+	public ArrayList<String> getSizeList()
+	{
+		ArrayList<String> result=new ArrayList<String>();
+		for(String i :db.getCollectionNames())
+		{
+			if(i.substring(0, 3).equals("st."))
+			{		
+				result.add(i.substring(3)+" "+db.getCollection(i).getStats().get(SizeType.STORAGE_SIZE.value));
+			}
+		}
+		return result;
 	}
 	
 	public void dropAll()

@@ -4,6 +4,7 @@ import net.unikernel.npss.model.PMP;
 import com.mongodb.MongoException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeSet;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ws.rs.GET;
@@ -124,6 +125,15 @@ public class Worker
 			result += " z => " + testMap.get("z");
 			result += "<br/>JSON: " + JSONValue.toJSONString(testMap);
 			result += "<br/>Value: " + value;
+			result += "<br/><br/>Structure";
+			for (Map.Entry<String,TreeSet<String>> i: mongodbAnt.getStructure().entrySet())
+			{
+				result += "<br/>\t"+i.getKey();
+				for(String j : i.getValue())
+				{
+					result += "<br/>\t\t" + j + mongodbAnt.getSize(i.getKey(), j, PMP.SizeType.STORAGE_SIZE, PMP.SizeUnit.KILOBYTE)+" KB";
+				}
+			}
 		}
 		catch (MongoException e)
 		{
