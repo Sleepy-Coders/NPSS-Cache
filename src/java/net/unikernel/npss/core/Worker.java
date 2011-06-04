@@ -2,6 +2,7 @@ package net.unikernel.npss.core;
 
 import net.unikernel.npss.model.PMP;
 import com.mongodb.MongoException;
+import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeSet;
@@ -126,12 +127,13 @@ public class Worker
 			result += "<br/>JSON: " + JSONValue.toJSONString(testMap);
 			result += "<br/>Value: " + value;
 			result += "<br/><br/>Structure";
+			DecimalFormat format = new DecimalFormat("#0.00");
 			for (Map.Entry<String,TreeSet<String>> i: mongodbAnt.getStructure().entrySet())
 			{
-				result += "<br/>\t"+i.getKey();
+				result += "<br/>__"+i.getKey();
 				for(String j : i.getValue())
 				{
-					result += "<br/>\t\t" + j + mongodbAnt.getSize(i.getKey(), j, PMP.SizeType.STORAGE_SIZE, PMP.SizeUnit.KILOBYTE)+" KB";
+					result += "<br/>____"+ j + " " + format.format(mongodbAnt.getSize(i.getKey(), j, PMP.SizeType.DATA_SIZE, PMP.SizeUnit.KILOBYTE))+" KB";
 				}
 			}
 		}

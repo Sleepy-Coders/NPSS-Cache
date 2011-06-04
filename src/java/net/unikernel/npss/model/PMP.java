@@ -1,6 +1,7 @@
 package net.unikernel.npss.model;
 
 import com.mongodb.BasicDBObject;
+import com.mongodb.CommandResult;
 import com.mongodb.DB;
 import com.mongodb.DBObject;
 import com.mongodb.Mongo;
@@ -347,7 +348,7 @@ public class PMP
 		TreeMap<String,TreeSet<String>> result = new TreeMap<String,TreeSet<String>>();
 		for(String i :db.getCollectionNames())
 		{
-			String[] set = i.split(".");
+			String[] set = i.split("\\.");
 			if(set[0].equals("st"))
 			{
 				if(!result.containsKey(set[1]))
@@ -405,7 +406,8 @@ public class PMP
 	 */
 	public Double getSize(String task, String factory, SizeType sizeType, SizeUnit sizeUnit)
 	{
-		return (Double)db.getCollection("st."+task + "." + factory).getStats().get(sizeType.value)/sizeUnit.value;
+		CommandResult result = db.getCollection("st."+task + "." + factory).getStats();
+		return new Double((Integer)result.get(sizeType.value))/sizeUnit.value;
 	}
 	
 	public ArrayList<String> getSizeList()
