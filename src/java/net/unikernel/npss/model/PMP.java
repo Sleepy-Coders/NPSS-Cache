@@ -86,12 +86,24 @@ public class PMP
 		}
 	};
 	
-	private DB db;
+	//Variablles for connection
+	private String dbURL; //url or ip (or localhost) of mongodb server
+	private String dbName; //name of the db that stores mongo data
+	private boolean dbAuth; //is the authentification needed
+	private String dbUser; //username for auth
+	private char[] dbPass; //password for auth
+	//=====
+	
+	private Mongo connection;
 	/**
 	 * @return the db
 	 */
-	DB getDb()
+	private DB getDb() throws BadLoginException
 	{
+		DB db = connection.getDB(dbName);
+		if(dbAuth)
+			if (!db.authenticate(dbUser, dbPass))
+				throw new BadLoginException();	
 		return db;
 	}
 	
@@ -202,13 +214,12 @@ public class PMP
 	@PostConstruct
 	public void init() throws MongoException, UnknownHostException, BadLoginException
 	{
-		String user = "crawler";
-		char[] pass = "J7vVBYCiGTjcnhN6Qe".toCharArray();
-		db = new Mongo("maximator.uar.net").getDB("npss");
-		if (!db.authenticate(user, pass))
-		{
-			throw new BadLoginException();
-		}
+		dbURL="maximator.uar.net";
+		dbName = "npss";
+		dbAuth = true;
+		dbUser = "crawler";
+		dbPass = "J7vVBYCiGTjcnhN6Qe".toCharArray();
+		connection = new Mongo(dbURL);
 	}
 	
 	/**
@@ -217,7 +228,7 @@ public class PMP
 	@PreDestroy
 	public void dispose()
 	{
-		db.getMongo().close();
+		connection.close();
 	}
 	/**
 	 * Creates new document in the database
@@ -228,8 +239,10 @@ public class PMP
 	 * @return returns true if the document is successfully created and false if not (in most of situations document already exists)
 	 * @throws MongoException exception regarding some mongodb stuff
 	 */
-	public boolean create(String task, String factory, Map<String, String> parameters, String value) throws MongoException
+	public boolean create(String task, String factory, Map<String, String> parameters, String value) throws MongoException, BadLoginException
 	{
+		DB db = getDb();
+		db.requestStart();
 		if(!db.getCollectionNames().contains("st."+task + "." + factory))
 		{
 			BasicDBObject index = new BasicDBObject();
@@ -241,8 +254,16 @@ public class PMP
 		BasicDBObject insert = new BasicDBObject();
 		insert.put("parameters", parameters);
 		insert.put("value", value);
-		db.getCollection("st."+task + "." + factory).insert(insert);
-		return true;
+		if(db.getCollection("st."+task + "." + factory).insert(insert).getLastError().get("err")==null)
+		{
+			db.requestDone();
+			return true;
+		}
+		else
+		{
+			db.requestDone();
+			return false;
+		}
 	}
 	
 	/**
@@ -252,8 +273,10 @@ public class PMP
 	 * @return returns true if the document is successfully created and false if not (in most of situations document already exists)
 	 * @throws MongoException exception regarding some mongodb stuff
 	 */
-	public boolean create(CombiKey key, String value) throws MongoException
+	public boolean create(CombiKey key, String value) throws MongoException, BadLoginException
 	{ 
+		DB db = getDb();
+		db.requestStart();
 		if(!db.getCollectionNames().contains("st."+key.task + "." + key.factory))
 		{
 			BasicDBObject index = new BasicDBObject();
@@ -266,9 +289,15 @@ public class PMP
 		insert.put("parameters", key.getParameters());
 		insert.put("value", value);
 		if(db.getCollection("st."+key.getTask() + "." + key.getFactory()).insert(insert).getLastError().get("err")==null)
+		{
+			db.requestDone();
 			return true;
+		}
 		else
+		{
+			db.requestDone();
 			return false;
+		}
 	}
 	/**
 	 * Returns a value that matches the "key"
@@ -278,9 +307,9 @@ public class PMP
 	 * @return the result of calculation
 	 * @throws MongoException exception regarding some mongodb stuff
 	 */
-	public String read(String task, String factory, Map<String, String> parameters) throws MongoException
+	public String read(String task, String factory, Map<String, String> parameters) throws MongoException, BadLoginException
 	{
-		DBObject val = db.getCollection("st."+task + "." + factory).findOne(new BasicDBObject("parameters", new BasicDBObject(parameters)));
+		DBObject val = getDb().getCollection("st."+task + "." + factory).findOne(new BasicDBObject("parameters", new BasicDBObject(parameters)));
 		if(val == null)
 			return null;
 		else
@@ -292,9 +321,10 @@ public class PMP
 	 * @return the result of calculation
 	 * @throws MongoException exception regarding some mongodb stuff
 	 */
-	public String read(CombiKey key) throws MongoException
+	public String read(CombiKey key) throws MongoException, BadLoginException
 	{
-		DBObject val = db.getCollection("st."+key.getTask() + "." + key.getFactory()).findOne(new BasicDBObject("parameters", new BasicDBObject(key.getParameters())));
+		DB db = getDb();
+		DBObject val = getDb().getCollection("st."+key.getTask() + "." + key.getFactory()).findOne(new BasicDBObject("parameters", new BasicDBObject(key.getParameters())));
 		if(val == null)
 			return null;
 		else
@@ -307,9 +337,9 @@ public class PMP
 	 * @param parameters map of parameters
 	 * @param value main value to update (the result of calculation)
 	 */
-	public void update(String task, String factory, Map<String, String> parameters, String value)
+	public void update(String task, String factory, Map<String, String> parameters, String value) throws BadLoginException
 	{
-		db.getCollection("st."+task + "." + factory).update(new BasicDBObject("parameters", new BasicDBObject(parameters)), new BasicDBObject("$set", new BasicDBObject("value", value)), false, false);
+		getDb().getCollection("st."+task + "." + factory).update(new BasicDBObject("parameters", new BasicDBObject(parameters)), new BasicDBObject("$set", new BasicDBObject("value", value)), false, false);
 	}
 	
 	/**
@@ -317,9 +347,9 @@ public class PMP
 	 * @param key a "key" to update the mapped value
 	 * @param value main value to update (the result of calculation)
 	 */
-	public void update(CombiKey key, String value)
+	public void update(CombiKey key, String value) throws BadLoginException
 	{
-		db.getCollection("st."+key.getTask() + "." + key.getFactory()).update(new BasicDBObject("parameters", new BasicDBObject(key.getParameters())), new BasicDBObject("$set", new BasicDBObject("value", value)), false, false);
+		getDb().getCollection("st."+key.getTask() + "." + key.getFactory()).update(new BasicDBObject("parameters", new BasicDBObject(key.getParameters())), new BasicDBObject("$set", new BasicDBObject("value", value)), false, false);
 	}
 	/**
 	 * Deletes a value that matches the "key"
@@ -328,9 +358,9 @@ public class PMP
 	 * @param parameters map of parameters
 	 * @throws MongoException exception regarding some mongodb stuff
 	 */
-	public void delete(String task, String factory, Map<String, String> parameters) throws MongoException
+	public void delete(String task, String factory, Map<String, String> parameters) throws MongoException, BadLoginException
 	{
-		db.getCollection("st."+task + "." + factory).remove(new BasicDBObject("parameters", new BasicDBObject(parameters)));
+		getDb().getCollection("st."+task + "." + factory).remove(new BasicDBObject("parameters", new BasicDBObject(parameters)));
 	}
 	
 	/**
@@ -338,15 +368,15 @@ public class PMP
 	 * @param key a "key" to delete the mapped value
 	 * @throws MongoException exception regarding some mongodb stuff
 	 */
-	public void delete(CombiKey key) throws MongoException
+	public void delete(CombiKey key) throws MongoException, BadLoginException
 	{
-		db.getCollection("st."+key.getTask() + "." + key.getFactory()).remove(new BasicDBObject("parameters", new BasicDBObject(key.getParameters())));
+		getDb().getCollection("st."+key.getTask() + "." + key.getFactory()).remove(new BasicDBObject("parameters", new BasicDBObject(key.getParameters())));
 	}
 	
-	public TreeMap<String,TreeSet<String>> getStructure()
+	public TreeMap<String,TreeSet<String>> getStructure() throws BadLoginException
 	{
 		TreeMap<String,TreeSet<String>> result = new TreeMap<String,TreeSet<String>>();
-		for(String i :db.getCollectionNames())
+		for(String i :getDb().getCollectionNames())
 		{
 			String[] set = i.split("\\.");
 			if(set[0].equals("st"))
@@ -367,7 +397,7 @@ public class PMP
 	 * @param factory value of factory
 	 * @return size itself
 	 */
-	public Double getSize(String task, String factory)
+	public Double getSize(String task, String factory) throws BadLoginException
 	{
 		return getSize(task, factory, SizeType.DATA_SIZE, SizeUnit.BYTE);
 	}
@@ -379,7 +409,7 @@ public class PMP
 	 * @param sizeType an enum that specifies what size should be returned
 	 * @return size itself
 	 */
-	public Double getSize(String task, String factory, SizeType sizeType)
+	public Double getSize(String task, String factory, SizeType sizeType) throws BadLoginException
 	{
 		return getSize(task, factory, sizeType, SizeUnit.BYTE);
 	}
@@ -391,7 +421,7 @@ public class PMP
 	 * @param sizeUnit an enum that specifies in what units size should be returned
 	 * @return size itself
 	 */
-	public Double getSize(String task, String factory, SizeUnit sizeUnit)
+	public Double getSize(String task, String factory, SizeUnit sizeUnit) throws BadLoginException
 	{
 		return getSize(task, factory, SizeType.DATA_SIZE, sizeUnit);
 	}
@@ -404,27 +434,16 @@ public class PMP
 	 * @param sizeUnit an enum that specifies in what units size should be returned
 	 * @return size itself
 	 */
-	public Double getSize(String task, String factory, SizeType sizeType, SizeUnit sizeUnit)
+	public Double getSize(String task, String factory, SizeType sizeType, SizeUnit sizeUnit) throws BadLoginException
 	{
-		CommandResult result = db.getCollection("st."+task + "." + factory).getStats();
+		CommandResult result = getDb().getCollection("st."+task + "." + factory).getStats();
 		return new Double((Integer)result.get(sizeType.value))/sizeUnit.value;
 	}
 	
-	public ArrayList<String> getSizeList()
+	public void dropAll() throws BadLoginException
 	{
-		ArrayList<String> result=new ArrayList<String>();
-		for(String i :db.getCollectionNames())
-		{
-			if(i.substring(0, 3).equals("st."))
-			{		
-				result.add(i.substring(3)+" "+db.getCollection(i).getStats().get(SizeType.STORAGE_SIZE.value));
-			}
-		}
-		return result;
-	}
-	
-	public void dropAll()
-	{
+		DB db = getDb();
+		db.requestStart();
 		for (String i : db.getCollectionNames())
 		{
 			if(i.substring(0, 3).equals("st."))
@@ -432,6 +451,7 @@ public class PMP
 				db.getCollection(i).drop();
 			}
 		}
+		db.requestDone();
 	}
 	
 	/**
