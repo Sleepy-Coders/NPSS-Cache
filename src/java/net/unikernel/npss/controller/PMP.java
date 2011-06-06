@@ -275,8 +275,11 @@ public class PMP
 	{
 		DB db = getDb();
 		//db.requestStart();
-		if(!db.getCollectionNames().contains("st."+task + "." + factory))	
+		if(!db.getCollectionNames().contains("st."+task + "." + factory))
+		{
+			db.getCollection("st."+task + "." + factory).dropIndexes();
 			db.getCollection("st."+task + "." + factory).ensureIndex(new BasicDBObject("parameters", 1), "i", true);
+		}
 		BasicDBObject insert = new BasicDBObject();
 		insert.put("parameters", parameters);
 		insert.put("value", value);
@@ -305,11 +308,8 @@ public class PMP
 		db.requestStart();
 		if(!db.getCollectionNames().contains("st."+key.task + "." + key.factory))
 		{
-			BasicDBObject index = new BasicDBObject();
-			index.put("parameters", 1);
-			index.put("unique", true);
-			index.put("name", "i");
-			db.getCollection("st."+key.getTask() + "." + key.getFactory()).ensureIndex(index);
+			db.getCollection("st."+key.getTask() + "." + key.getFactory()).dropIndexes();
+			db.getCollection("st."+key.getTask() + "." + key.getFactory()).ensureIndex(new BasicDBObject("parameters", 1), "i", true);
 		}
 		BasicDBObject insert = new BasicDBObject();
 		insert.put("parameters", key.getParameters());
