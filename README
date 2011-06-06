@@ -1,4 +1,6 @@
+==MongoDB connection==
 In /src/java/net/unikernel/npss/controller/resources
-rename semple.connection.props to connection.props аnd edit it to contain your mongodb info
+rename "semple.connection.props" to "connection.props" аnd edit it to contain your mongodb connection data. More info on configuration details can be red in configuration file. More info on mongoDB: http://www.mongodb.org/
 
+==Web UI structure list==
 Under /resources/list/{interval} in web interface you can see db structure with sizes. Interval can be omitted, but when set it's used for auto-refresh in seconds.

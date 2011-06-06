@@ -1,7 +1,13 @@
-#fill the file with you mongoDB connection data
+#fill the file with you mongoDB connection data. All data must be entered as key-value pairs
+
+#dbURL - url ip (or localhost) of db server
 dbURL localhost
+#dbName - a name of the database to use for storage
 dbName test
-#set dbAuth to "yes" and enter login and password if you need to authentificate
+
+#set dbAuth to "yes" and enter login and password if you need to authenticate
 dbAuth yes
+#dbUser - an username for authentication
 dbUser user
+#dbPass - password for authentication
 dbPass password
