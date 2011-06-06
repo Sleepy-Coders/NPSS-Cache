@@ -1,0 +1,2 @@
+In /src/java/net/unikernel/npss/controller/resources
+rename semple.connection.props to connection.props аnd edit it to contain your mongodb info
