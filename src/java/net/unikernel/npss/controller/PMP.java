@@ -113,8 +113,16 @@ public class PMP
 	
 	public boolean validateProperties(Properties props)
 	{
-		if(props.contains("dbURL")&&props.contains("dbName")&&((props.contains("dbAuth")&&((props.getProperty("dbAuth").equals("yes")&&props.contains("dbUser")&&props.contains("dbPass"))||props.getProperty("dbAuth").equals("no")))||!props.contains("dbAuth")))
+		if(props.containsKey("dbURL")&&props.containsKey("dbName"))
+		{
+			if(props.containsKey("dbAuth")&&props.getProperty("dbAuth").equals("yes"))
+			{
+				if(props.containsKey("dbUser")&&props.containsKey("dbPass"))
+						return true;
+				return false;
+			}
 			return true;
+		}
 		return false;
 	}
 	
