@@ -1,0 +1,7 @@
+#fill the file with you mongoDB connection data
+dbURL localhost
+dbName test
+#set dbAuth to "yes" and enter login and password if you need to authentificate
+dbAuth yes
+dbUser user
+dbPass password

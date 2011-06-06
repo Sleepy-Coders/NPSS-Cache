@@ -1,6 +1,6 @@
 package net.unikernel.npss.core;
 
-import net.unikernel.npss.model.PMP;
+import net.unikernel.npss.controller.PMP;
 import com.mongodb.MongoException;
 import java.text.DecimalFormat;
 import java.util.HashMap;

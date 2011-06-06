@@ -5,3 +5,4 @@
 \.conflict\~$
 nbproject/private
 build/
+src/java/net/unikernel/npss/controller/resources/connection\.props
