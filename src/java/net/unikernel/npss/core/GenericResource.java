@@ -58,8 +58,7 @@ public class GenericResource
 				parameters.put("#", paramJSONString);
 			}
 			parameters.put("AlteredSeriesIndex", alteredSeriesIndex);
-			
-			String result = mongodbAnt.read(task, factory, parameters);
+						String result = mongodbAnt.read(task, factory, parameters);
 			return result;
 		}
 		catch(Exception ex)
@@ -108,12 +107,11 @@ public class GenericResource
 			sdMap.put("AlteredSeriesIndex", String.valueOf(map.get("AlteredSeriesIndex")));
 			
 			boolean set = mongodbAnt.create(taskName, factoryName, sdMap, JSONValue.toJSONString(map.get("Value")));
-			String val = mongodbAnt.read(taskName, factoryName, sdMap);
 			if (set)
 			{
-				return "Data was set: " + JSONValue.toJSONString(map) + " => (mongodbAnt has got) " + val;
+				return "Data was set.";
 			}
-			return "Data was NOT set. Under the key: " + JSONValue.toJSONString(map) + ", already sits this value: " + val;
+			return "Data was NOT set.";
 		}
 		catch (Exception ex)
 		{

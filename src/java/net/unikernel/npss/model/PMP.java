@@ -101,9 +101,9 @@ public class PMP
 	private DB getDb() throws BadLoginException
 	{
 		DB db = connection.getDB(dbName);
-		if(dbAuth)
+		if(dbAuth&&!db.isAuthenticated())
 			if (!db.authenticate(dbUser, dbPass))
-				throw new BadLoginException();	
+				throw new BadLoginException();
 		return db;
 	}
 	
@@ -242,26 +242,20 @@ public class PMP
 	public boolean create(String task, String factory, Map<String, String> parameters, String value) throws MongoException, BadLoginException
 	{
 		DB db = getDb();
-		db.requestStart();
-		if(!db.getCollectionNames().contains("st."+task + "." + factory))
-		{
-			BasicDBObject index = new BasicDBObject();
-			index.put("parameters", 1);
-			index.put("unique", true);
-			index.put("name", "i");
-			db.getCollection("st."+task + "." + factory).ensureIndex(index);
-		}
+		//db.requestStart();
+		if(!db.getCollectionNames().contains("st."+task + "." + factory))	
+			db.getCollection("st."+task + "." + factory).ensureIndex(new BasicDBObject("parameters", 1), "i", true);
 		BasicDBObject insert = new BasicDBObject();
 		insert.put("parameters", parameters);
 		insert.put("value", value);
 		if(db.getCollection("st."+task + "." + factory).insert(insert).getLastError().get("err")==null)
 		{
-			db.requestDone();
+			//db.requestDone();
 			return true;
 		}
 		else
 		{
-			db.requestDone();
+			//db.requestDone();
 			return false;
 		}
 	}
