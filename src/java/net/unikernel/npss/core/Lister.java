@@ -13,8 +13,8 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import net.unikernel.npss.controller.PMP;
-import net.unikernel.npss.controller.PMP.BadLoginException;
+import net.unikernel.npss.model.PMP;
+import net.unikernel.npss.model.PMP.BadLoginException;
 
 /**
  *
