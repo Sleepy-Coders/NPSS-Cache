@@ -1,0 +1,28 @@
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <link rel="stylesheet" type="text/css" href="${rootUrl}/style/main.css">
+        <title>NPSS</title>
+    </head>
+    <body>
+        <div id="wrapper">
+<!-- start header -->
+<div id="header">
+	<div id="logo">
+
+		<h1><a href="#">NPSS</a></h1>
+		<h2> Design by Free Css Templates</h2>
+	</div>
+</div>
+<!-- end header -->
+
+<!-- start page -->
+
+<div id="page">
+	<!-- start content -->
+	<div id="content">
+            <div class="post">
