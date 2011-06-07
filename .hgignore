@@ -6,3 +6,5 @@
 nbproject/private
 build/
 src/java/net/unikernel/npss/controller/resources/connection\.props
+syntax: glob
+src/java/net/unikernel/npss/model/resources/connection.props
