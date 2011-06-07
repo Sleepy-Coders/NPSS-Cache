@@ -38,11 +38,12 @@ public class GenericResource
 	 * @return Data from the DB under the specified key.
 	 */
 	@GET
-	@Path("{TaskFullName}/{FactoryFullName}/{AlteredSeriesIndex}/{Argument}")
+	@Path("{TaskName}/{FactoryName}/{AlteredSeriesIndex}/{SurfaceFileHash}/{Argument}")
 	@Produces("text/html")
-	public String getValue(	@PathParam("TaskFullName") String task,
-							@PathParam("FactoryFullName") String factory,
+	public String getValue(	@PathParam("TaskName") String task,
+							@PathParam("FactoryName") String factory,
 							@PathParam("AlteredSeriesIndex") String alteredSeriesIndex,
+							@PathParam("SurfaceFileHash") String fileHash,
 							@PathParam("Argument") String paramJSONString)
 	{
 		try
@@ -58,7 +59,8 @@ public class GenericResource
 				parameters.put("#", paramJSONString);
 			}
 			parameters.put("AlteredSeriesIndex", alteredSeriesIndex);
-						String result = mongodbAnt.read(task, factory, parameters);
+			parameters.put("SurfaceFileHash", fileHash);
+			String result = mongodbAnt.read(task, factory, parameters);
 			return result;
 		}
 		catch(Exception ex)
@@ -92,8 +94,8 @@ public class GenericResource
 		try
 		{
 			Map<String, ?> map = JSONtoMap.parse(content);
-			String taskName = map.get("TaskFullName").toString();
-			String factoryName = map.get("FactoryFullName").toString();
+			String taskName = map.get("TaskName").toString();
+			String factoryName = map.get("FactoryName").toString();
 			Map<String, String> sdMap;
 			if(map.get("Argument") instanceof Map)
 			{
@@ -105,6 +107,7 @@ public class GenericResource
 				sdMap.put("#", String.valueOf(map.get("Argument")));
 			}
 			sdMap.put("AlteredSeriesIndex", String.valueOf(map.get("AlteredSeriesIndex")));
+			sdMap.put("SurfaceFileHash", (String)map.get("SurfaceFileHash"));
 			
 			boolean set = mongodbAnt.create(taskName, factoryName, sdMap, JSONValue.toJSONString(map.get("Value")));
 			if (set)

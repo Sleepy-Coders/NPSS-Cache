@@ -1,3 +1,5 @@
+*Server is written in Java EE 6 Web*
+
 ==MongoDB connection==
 In /src/java/net/unikernel/npss/controller/resources
 rename "semple.connection.props" to "connection.props" аnd edit it to contain your mongodb connection data. More info on configuration details can be red in configuration file. 
