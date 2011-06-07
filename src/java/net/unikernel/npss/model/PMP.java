@@ -1,4 +1,4 @@
-package net.unikernel.npss.controller;
+package net.unikernel.npss.model;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.CommandResult;
@@ -87,7 +87,7 @@ public class PMP
 		}
 	};
 	
-	private final String dbPropertiesFile = "/net/unikernel/npss/controller/resources/connection.props";
+	private final String dbPropertiesFile = "/net/unikernel/npss/model/resources/connection.props";
 	private Properties dbProperties;
 	
 	private Mongo connection;
@@ -402,18 +402,24 @@ public class PMP
 	public TreeMap<String,TreeSet<String>> getStructure() throws BadLoginException
 	{
 		TreeMap<String,TreeSet<String>> result = new TreeMap<String,TreeSet<String>>();
-		for(String i :getDb().getCollectionNames())
-		{
-			String[] set = i.split("\\.");
-			if(set[0].equals("st"))
-			{
-				if(!result.containsKey(set[1]))
-				{
-					result.put(set[1], new TreeSet<String>());
-				}
-				((TreeSet<String>)result.get(set[1])).add(set[2]);
-			}
-		}
+                try {
+                    for(String i :getDb().getCollectionNames())
+                    {
+                            String[] set = i.split("\\.");
+                            if(set[0].equals("st"))
+                            {
+                                    if(!result.containsKey(set[1]))
+                                    {
+                                            result.put(set[1], new TreeSet<String>());
+                                    }
+                                    ((TreeSet<String>)result.get(set[1])).add(set[2]);
+                            }
+                    }
+                }
+                catch (NullPointerException ex) {
+                    
+                }
+
 		return result;
 	}
 	
